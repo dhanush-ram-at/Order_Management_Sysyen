@@ -1,6 +1,4 @@
-// One place that defines what an Order looks like
-// Use this everywhere instead of "any"
-
+// defines how order look like
 export type Order = {
   order_id:       number
   order_code:     string
@@ -15,7 +13,7 @@ export type Order = {
   created_at:     string
 }
 
-// What the form holds before submitting
+// what the form holds before submitting
 export type OrderFormData = {
   customer_name:  string
   product_name:   string
@@ -26,7 +24,7 @@ export type OrderFormData = {
   order_status:   string
 }
 
-// Filters the user can apply
+// filters the user can apply
 export type OrderFilters = {
   page:     number
   search:   string

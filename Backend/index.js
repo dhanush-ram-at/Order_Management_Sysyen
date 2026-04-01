@@ -2,45 +2,42 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 
-const API_ROUTES = require("./constants/apiRoutes");
 const { jsonParser, urlencodedParser } = require("./middlewares/bodyParser");
 const errorHandler = require("./middlewares/errorHandler");
-const orderRoutes  = require("./routes/orderRoutes");
+const orderRoutes = require("./routes/orderRoutes");
+const authRoutes = require("./routes/authRoutes");
 require("dotenv").config();
 
-
-// to allow only the specific localhost
-app.use( cors({
+// Allow requests from the React dev server
+app.use(
+  cors({
     origin: "http://localhost:5173",
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
 );
 
-app.use(jsonParser);
-app.use(urlencodedParser);
+app.use(jsonParser);           // handles Content-Type: application/json
+app.use(urlencodedParser);     // handles Content-Type: application/form data
 
-// to check the server is working or not
+
 app.get("/", (req, res) => {
-  res.send("OMS backend is running");
+  res.send("OMS backend is running"); 
 });
 
-// /api/v1/orders
-app.use(API_ROUTES.BASE, orderRoutes);
+// Auth routes  →  /api/v1/auth/register  |  /api/v1/auth/login  |  /api/v1/auth/refresh
+app.use("/api/v1/auth", authRoutes);
 
+// Order routes  →  /api/v1/orders  |  /api/v1/orders/:id
+app.use("/api/v1/orders", orderRoutes);
 
-// show uploaded files in browser
-// http://localhost:5000/uploads/1774527550775.png
-app.use(
-  API_ROUTES.UPLOADS.base,
-  express.static(API_ROUTES.UPLOADS.folder)
-);
+// Serve uploaded files  →  http://localhost:5000/uploads/_filename_
+app.use("/uploads", express.static("uploads/order"));
 
-
-//error handler
+// Global error handler
 app.use(errorHandler);
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);

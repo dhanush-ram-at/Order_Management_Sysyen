@@ -1,5 +1,4 @@
 const MESSAGES = {
-
   ORDER: {
     CREATED:   "Order created successfully",
     UPDATED:   "Order updated successfully",
@@ -15,8 +14,13 @@ const MESSAGES = {
 
   SERVER: {
     INTERNAL_ERROR: "Something went wrong. Please try again later",
-  }
+  },
 
+  AUTH: {
+    BAD_REQUEST: "Invalid request. Please check your data",
+    UNAUTHORIZED: "Access denied. Please log in"
+
+  }
 };
 
 module.exports = MESSAGES;

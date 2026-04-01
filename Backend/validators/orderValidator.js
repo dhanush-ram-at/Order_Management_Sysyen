@@ -35,16 +35,12 @@ const validateCreateOrder = (req, res, next) => {
       message: MESSAGES.VALIDATION.INVALID_PRICE_QUANTITY
     });
   }
-
   next();
-
 };
 
 
 const validateUpdateOrder = (req, res, next) => {
-
   const { price, quantity } = req.body;
-
   if (price !== undefined && Number(price) <= 0) {
     return res.status(STATUS.BAD_REQUEST).json({
       message: MESSAGES.VALIDATION.INVALID_PRICE_QUANTITY
@@ -56,9 +52,7 @@ const validateUpdateOrder = (req, res, next) => {
       message: MESSAGES.VALIDATION.INVALID_PRICE_QUANTITY
     });
   }
-
   next();
-
 };
 
 module.exports = { validateCreateOrder, validateUpdateOrder };

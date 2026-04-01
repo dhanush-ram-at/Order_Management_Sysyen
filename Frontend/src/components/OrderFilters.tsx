@@ -13,17 +13,16 @@ const STATUS_OPTIONS = [
   { value:"Delivered", label: "Delivered" },
   { value:"Pending", label: "Pending" },
   { value:"Cancelled", label: "Cancelled" },
-]
+];
 
 // Sort options
 const SORT_OPTIONS = [
-    { value: "created_at", label: "Created Date" },
-    { value: "order_date", label: "Order Date" },
-    { value: "total_amount",label: "Total Amount" },
-]
+  { value: "created_at", label: "Created Date" },
+  { value: "order_date", label: "Order Date" },
+  { value: "total_amount",label: "Total Amount" },
+];
 
 function OrderFilter({ filters, setFilters, onReset }: Props) {
-
   // Update one field in filters, keep rest the same
   // Reset page to 1 whenever any filter changes
   const handleChange = (field: keyof OrderFilters, value: string | number) => {
@@ -80,8 +79,7 @@ function OrderFilter({ filters, setFilters, onReset }: Props) {
       </Button>
 
     </Box>
-  )
-
+  );
 }
 
-export default OrderFilter
+export default OrderFilter;

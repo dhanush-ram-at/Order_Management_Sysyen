@@ -1,14 +1,16 @@
-import { AppBar, Toolbar, Typography, Button } from "@mui/material"
+import { AppBar, Toolbar, Typography, Button } from "@mui/material";
+import { PAGE_ROUTES } from "../Routes/apiRoutes";
 
 function Navbar() {
-
-  // Get user name from localStorage
-  const user = JSON.parse(localStorage.getItem("user") || "{}")
+  // getting user name from localStorage
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   const handleLogout = () => {
-    localStorage.removeItem("user")
-    window.location.href = "/"
-  }
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    localStorage.removeItem("refreshToken");
+    window.location.href = PAGE_ROUTES.LOGIN;
+  };
 
   return (
     <AppBar position="static">
@@ -27,11 +29,9 @@ function Navbar() {
         <Button color="inherit" onClick={handleLogout}>
           Logout
         </Button>
-
       </Toolbar>
     </AppBar>
-  )
-
+  );
 }
 
-export default Navbar
+export default Navbar;

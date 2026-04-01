@@ -67,7 +67,7 @@ const getOrderById = async (id) => {
 // UPDATE
 const updateOrder = async (id, body) => {
 
-        // 🔥 STEP 1: Get existing order
+        // get the existing order
     const existingOrder = await orderRepository.findOrderById(id);
 
     if (!existingOrder) {
@@ -76,7 +76,7 @@ const updateOrder = async (id, body) => {
 
     const data = {};
 
-    // Only update fields if provided
+    // only update fields if provided
     if (body.customer_name !== undefined)
         data.customer_name = body.customer_name;
 
@@ -98,7 +98,7 @@ const updateOrder = async (id, body) => {
     if (body.order_status !== undefined)
         data.order_status = body.order_status;
 
-    // this only calculate if both prise and quantity exist
+    // this only calculate if both price and quantity exist
     if (body.price !== undefined && body.quantity !== undefined) {
         data.total_amount = calcTotal(body.price, body.quantity);
     }
@@ -113,10 +113,6 @@ const updateOrder = async (id, body) => {
         : existingOrder.quantity;
 
     data.total_amount = re_calcTotal(finalPrice,finalQuantity);
-
-
-
-
 
   const order = await orderRepository.updateOrderById(id, data);
   return order;

@@ -1,13 +1,7 @@
 const sanitizeValue = (value) => {
-
-  if (typeof value !== "string") return value;
-
-  // remove leading and trailing spaces
-  let clean = value.trim();
-
-  // remove any HTML tags like <script>, <img>, <div> etc.
-  clean = clean.replace(/<[^>]*>/g, "");
-
+  if (typeof value !== "string") return value;      // removes numbers or booleans
+  let clean = value.trim();                 // remove leading and trailing spaces
+  clean = clean.replace(/<[^>]*>/g, "");    // remove any HTML tags like <script>, <img>, <div> etc.
   return clean;
 
 };
@@ -16,10 +10,10 @@ const sanitizeValue = (value) => {
 const sanitizeBody = (req, res, next) => {
   if (req.body && typeof req.body === "object") {
     for (const key in req.body) {
-      req.body[key] = sanitizeValue(req.body[key]);
+      req.body[key] = sanitizeValue(req.body[key]);         // clean every field
     }
   }
-  next();
+  next();      // pass to next middleware
 };
 
 module.exports = sanitizeBody;

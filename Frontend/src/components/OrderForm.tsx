@@ -4,30 +4,29 @@ import { createOrder, updateOrder } from "./../services/api"
 import type { Order, OrderFormData } from "./../types/order"
 
 type Props = {
-  open:         boolean
-  setOpen:      (v: boolean) => void
-  order:        Order | null   // null = create mode, Order = edit mode
+  open: boolean
+  setOpen: (v: boolean) => void
+  order: Order | null   // null = create mode, Order = edit mode
   reloadOrders: () => void
-}
+};
 
-// Default empty form
+// default empty form
 const EMPTY_FORM: OrderFormData = {
-  customer_name:  "",
-  product_name:   "",
-  order_date:     "",
-  price:          "",
-  quantity:       "",
+  customer_name: "",
+  product_name:  "",
+  order_date: "",
+  price: "",
+  quantity: "",
   payment_method: "CASH",
-  order_status:   "Pending"
-}
+  order_status: "Pending"
+};
 
 function OrderForm({ open, setOpen, order, reloadOrders }: Props) {
+  const [form, setForm] = useState<OrderFormData>(EMPTY_FORM);
+  const [files, setFiles] = useState<FileList | null>(null);
 
-  const [form, setForm]   = useState<OrderFormData>(EMPTY_FORM)
-  const [files, setFiles] = useState<FileList | null>(null)
-
-  // When editing — fill the form with the order's current values
-  // When creating — reset to empty
+  // while editing — fill the form with the order's current values
+  // while creating — reset to empty
   useEffect(() => {
     if (order) {
       setForm({
@@ -44,18 +43,17 @@ function OrderForm({ open, setOpen, order, reloadOrders }: Props) {
     }
   }, [order, open])
 
-  // Update one field in the form
+  // update one field in the form
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
 
   const handleSubmit = async () => {
-
     if (order) {
-      // EDIT — send JSON (no files for update)
+      // edit — send JSON (no files for update)
       await updateOrder(order.order_id, form)
     } else {
-      // CREATE — send FormData (has files)
+      // create — send FormData (has files)
       const data = new FormData()
       Object.keys(form).forEach((key) => {
         data.append(key, form[key as keyof OrderFormData])
@@ -78,7 +76,6 @@ function OrderForm({ open, setOpen, order, reloadOrders }: Props) {
 
   return (
     <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
-
       <DialogTitle>
         {order ? "Edit Order" : "Create Order"}
       </DialogTitle>
@@ -152,10 +149,9 @@ function OrderForm({ open, setOpen, order, reloadOrders }: Props) {
         </Button>
 
       </DialogContent>
-
     </Dialog>
-  )
+  );
 
 }
 
-export default OrderForm
+export default OrderForm;
