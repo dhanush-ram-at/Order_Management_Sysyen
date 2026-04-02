@@ -1,57 +1,94 @@
 import { useState } from "react"
+import { Box, Paper, Typography, Divider } from "@mui/material"
 import axios from "axios"
-import { API_ROUTES, PAGE_ROUTES } from "../Routes/apiRoutes";
+import { API_ROUTES, PAGE_ROUTES } from "../Routes/apiRoutes"
+import AppTextField from "../components/common/AppTextField"
+import AppButton from "../components/common/AppButton"
+import { authStyles } from "../constants/styles/AuthStyles"
 
 function Login() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [error, setError] = useState("");
-    
-  const handleLogin = async () => {
-    
-    try{
-      const res = await axios.post(API_ROUTES.AUTH.LOGIN,{ email, password })
+  const [emailErr, setEmailErr] = useState("")
+  const [passErr, setPassErr] = useState("")
+  const [loginErr, setLoginErr] = useState("")
 
-      // Save the token
+  const validate = () => {
+    let ok = true
+    setEmailErr(""); setPassErr(""); setLoginErr("")
+    if (!email.trim()) { setEmailErr("Email is required"); ok = false }
+    if (!password.trim()) { setPassErr("Password is required");  ok = false }
+    return ok
+  }
+
+  const handleLogin = async () => {
+    if (!validate()) return
+    try {
+      const res = await axios.post(API_ROUTES.AUTH.LOGIN, { email, password })
       localStorage.setItem("token", res.data.accessToken)
       localStorage.setItem("refreshToken", res.data.refreshToken)
-
-      // Save the user
       localStorage.setItem("user", JSON.stringify(res.data.user))
-
-      // Redirect to dashboard after successful login
-      window.location.href = PAGE_ROUTES.DASHBOARD
+      window.location.href =
+        res.data.user.role === "ADMIN" ? PAGE_ROUTES.ADMIN_DASHBOARD : PAGE_ROUTES.USER_DASHBOARD
+    } catch {
+      setLoginErr("Invalid email or password")
     }
-    catch(err) {
-      setError("Invalid email or password")
-    }
-  };
-  
+  }
 
   return (
-   <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: 100 }}>
-      <h2>Order Management System</h2>
-      <div style={{ display: "flex", flexDirection: "column", gap: 12, width: 300 }}>
-        <input
-          placeholder="Email"
+    <Box sx={authStyles.pageWrapper}>
+      <Paper sx={authStyles.card}>
+
+        <Typography variant="h5" sx={authStyles.title}>
+          Order Management System
+        </Typography>
+        <Typography sx={authStyles.subtitle}>
+          Sign in to continue
+        </Typography>
+
+        <AppTextField
+          label="Email"
+          name="email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          style={{ padding: 8, fontSize: 14 }}
+          onChange={(e) => { setEmail(e.target.value); setEmailErr("") }}
+          error={!!emailErr}
+          helperText={emailErr}
         />
-        <input
-          placeholder="Password"
+
+        <AppTextField
+          label="Password"
+          name="password"
           type="password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          style={{ padding: 8, fontSize: 14 }}
+          onChange={(e) => { setPassword(e.target.value); setPassErr("") }}
+          error={!!passErr}
+          helperText={passErr}
         />
-        {error && <p style={{ color: "red", margin: 0 }}>{error}</p>}
-        <button onClick={handleLogin} style={{ padding: 10, fontSize: 14, cursor: "pointer" }}>
+
+        {loginErr && (
+          <Typography sx={authStyles.errorText}>{loginErr}</Typography>
+        )}
+
+        <AppButton fullWidth onClick={handleLogin} sx={authStyles.primaryButton}>
           Login
-        </button>
-      </div>
-    </div>
-  );
+        </AppButton>
+
+        <Divider sx={authStyles.divider}>
+          <Typography sx={authStyles.dividerText}>OR</Typography>
+        </Divider>
+
+        <AppButton
+          fullWidth
+          variant="outlined"
+          onClick={() => window.location.href = PAGE_ROUTES.REGISTER}
+          sx={authStyles.secondaryButton}
+        >
+          Create New Account
+        </AppButton>
+
+      </Paper>
+    </Box>
+  )
 }
 
-export default Login;
+export default Login

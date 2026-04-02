@@ -3,8 +3,8 @@ const API_ROUTES = {
 
   AUTH: {
     register: "/api/v1/auth/register",
-    login:    "/api/v1/auth/login",
-    refresh:  "/api/v1/auth/refresh",
+    login: "/api/v1/auth/login",
+    refresh: "/api/v1/auth/refresh",
   },
 
   ORDERS: {
@@ -14,7 +14,7 @@ const API_ROUTES = {
 
   UPLOADS: {
     serve: "/uploads",       // static file serving mount
-    dir:   "uploads/order",  // folder on disk
+    dir: "uploads/order",  // folder on disk
   },
 };
 

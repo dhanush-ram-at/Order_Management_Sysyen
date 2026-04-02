@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -12,22 +7,23 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-
 model order_placement {
   order_id       Int      @id @default(autoincrement())
-  order_code     String @unique
+  order_code     String   @unique
   customer_name  String
   order_date     DateTime
-  product_name String
-  
-  price          Decimal @db.Decimal(7, 2)
+  product_name   String
+
+  price          Decimal  @db.Decimal(7, 2)
   quantity       Int
-  total_amount   Decimal @db.Decimal(10, 2)
+  total_amount   Decimal  @db.Decimal(10, 2)
 
   payment_method String
   order_status   String
   remarks        String?
+
+  user_id        Int?
+  user           user?    @relation(fields: [user_id], references: [id])
 
   created_by     String?  @default("SYSTEM")
   created_at     DateTime @default(now())
@@ -40,26 +36,23 @@ model order_placement {
 }
 
 model order_attachments {
-  order_attachment_id Int @id @default(autoincrement())
-
-  order_id Int
-  file_name String
-  stored_file_name String
-  file_type String
-  file_size_kb Float
-  file_path String
-
-  uploaded_at DateTime @default(now())
-
-  order order_placement @relation(fields: [order_id], references: [order_id])
+  order_attachment_id Int      @id @default(autoincrement())
+  order_id            Int
+  file_name           String
+  stored_file_name    String
+  file_type           String
+  file_size_kb        Float
+  file_path           String
+  uploaded_at         DateTime @default(now())
+  order               order_placement @relation(fields: [order_id], references: [order_id])
 }
 
-
 model user {
-  id        Int    @id @default(autoincrement())
-  name      String
-  email     String @unique
-  password  String
-  role      String @default("USER")
-  created_at DateTime @default(now())
+  id         Int               @id @default(autoincrement())
+  name       String
+  email      String            @unique
+  password   String
+  role       String            @default("USER")
+  created_at DateTime          @default(now())
+  orders     order_placement[]
 }

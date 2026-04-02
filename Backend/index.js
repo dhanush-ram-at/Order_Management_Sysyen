@@ -8,6 +8,9 @@ const orderRoutes = require("./routes/orderRoutes");
 const authRoutes = require("./routes/authRoutes");
 require("dotenv").config();
 
+app.use(jsonParser);           // handles Content-Type: application/json
+app.use(urlencodedParser);     // handles Content-Type: application/form data
+
 // Allow requests from the React dev server
 app.use(
   cors({
@@ -17,8 +20,7 @@ app.use(
   })
 );
 
-app.use(jsonParser);           // handles Content-Type: application/json
-app.use(urlencodedParser);     // handles Content-Type: application/form data
+
 
 
 app.get("/", (req, res) => {

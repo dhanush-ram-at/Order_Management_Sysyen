@@ -1,39 +1,76 @@
-const orderDAL = require("../DAL/orderDAL")
+const orderDAL = require("../DAL/orderDAL");
+const APP_CONFIG = require("../constants/appConfig");
+const REPO = require("../constants/error_messages/repo");
+const { formatOrder, formatOrderList } = require("../DTOs/orderDTO");
 
-// to insert a new order row
+// CREATE
 const createOrder = async (data) => {
-  const order = await orderDAL.createOrderDAL({ data: data });
-  return order;
+  try {
+    const query = { data };
+    const raw   = await orderDAL.create(query);
+    return formatOrder(raw);
+  } catch (error) {
+    throw new Error(`${REPO.CREATE_ORDER_FAILED} ${error.message}`);
+  }
 };
 
-// to get many orders with filters, pagination, sorting
+// FIND ALL — builds full query with filters, pagination, sort
 const findAllOrders = async (filters, skip, limit, sort) => {
-  const orders = await orderDAL.findAllOrdersDAL(filters, skip, limit, sort);
-  
-  return orders;
+  try {
+    const query = {
+      where:   filters,
+      skip:    skip,
+      take:    limit,
+      orderBy: { [sort]: APP_CONFIG.SORT.DEFAULT_DIRECTION },
+    };
+    const rows = await orderDAL.findMany(query);
+    return formatOrderList(rows);
+  } catch (error) {
+    throw new Error(`${REPO.FETCH_ORDERS_FAILED}: ${error.message}`);
+  }
 };
 
-// to count the total matching orders which is used for pagination info
+// COUNT
 const countOrders = async (filters) => {
-  const total = await orderDAL.countOrdersDAL(filters);
-  return total;
+  try {
+    const query = { where: filters };
+    return await orderDAL.count(query);
+  } catch (error) {
+    throw new Error(`${REPO.COUNT_ORDERS_FAILED} ${error.message}`);
+  }
 };
 
-// to get one order by its ID
+// FIND ONE
 const findOrderById = async (id) => {
-  const order = await orderDAL.findOrderByIdDAL(id)
-  return order;
+  try {
+    const query = { where: { order_id: id } };
+    const raw   = await orderDAL.findUnique(query);
+    if (!raw) return null;
+    return formatOrder(raw);
+  } catch (error) {
+    throw new Error(`${REPO.FIND_ORDER_FAILED}: ${error.message}`);
+  }
 };
 
-// to update an order by ID
+// UPDATE
 const updateOrderById = async (id, data) => {
-  return await orderDAL.updateOrderByIdDAL(id, data)
-  
+  try {
+    const query = { where: { order_id: id }, data };
+    const raw = await orderDAL.update(query);
+    return formatOrder(raw);
+  } catch (error) {
+    throw new Error(`${REPO.UPDATE_ORDER_FAILED}: ${error.message}`);
+  }
 };
 
-// Soft delete —>not deleting the order, but just setting is_deleted as true
+// SOFT DELETE
 const softDeleteOrderById = async (id) => {
-  await orderDAL.softDeleteOrderByIdDAL(id)
+  try {
+    const query = { where: { order_id: id }, data: { is_deleted: true } };
+    await orderDAL.update(query);
+  } catch (error) {
+    throw new Error(`${REPO.DELETE_ORDER_FAILED}: ${error.message}`);
+  }
 };
 
 module.exports = { createOrder, findAllOrders, countOrders, findOrderById, updateOrderById, softDeleteOrderById };

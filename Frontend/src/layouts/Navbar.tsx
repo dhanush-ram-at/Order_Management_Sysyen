@@ -1,37 +1,63 @@
-import { AppBar, Toolbar, Typography, Button } from "@mui/material";
-import { PAGE_ROUTES } from "../Routes/apiRoutes";
+import { AppBar, Toolbar, Typography, Box, Chip } from "@mui/material"
+import Swal from "sweetalert2"
+import { PAGE_ROUTES } from "../Routes/apiRoutes"
+import AppButton from "../components/common/AppButton"
+import { COLORS } from "../constants/styles/theme"
+import { navbarStyles } from "../constants/styles/Navbarstyles"
 
 function Navbar() {
-  // getting user name from localStorage
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const user = JSON.parse(localStorage.getItem("user") || "{}")
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
-    localStorage.removeItem("refreshToken");
-    window.location.href = PAGE_ROUTES.LOGIN;
-  };
+    Swal.fire({
+      title: "Logout?",
+      text: "Are you sure you want to logout?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Yes, Logout",
+      cancelButtonText: "Stay",
+      confirmButtonColor: COLORS.error,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        localStorage.clear()
+        window.location.href = PAGE_ROUTES.LOGIN
+      }
+    })
+  }
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" sx={navbarStyles.appBar}>
       <Toolbar>
 
-        {/* Left — app title */}
-        <Typography sx={{ flexGrow: 1 }}>
+        <Typography variant="h6" sx={navbarStyles.title}>
           Order Management System
         </Typography>
 
-        {/* Right — user name + logout */}
-        <Typography sx={{ mr: 2 }}>
-          {user.name}
-        </Typography>
+        <Box sx={navbarStyles.rightSection}>
+          <Typography sx={navbarStyles.userName}>
+            {user.name}
+          </Typography>
 
-        <Button color="inherit" onClick={handleLogout}>
-          Logout
-        </Button>
+          <Chip
+            label={user.role}
+            size="small"
+            sx={user.role === "ADMIN" ? navbarStyles.adminChip : navbarStyles.userChip}
+          />
+
+          <AppButton
+            variant="outlined"
+            color="inherit"
+            size="small"
+            onClick={handleLogout}
+            sx={navbarStyles.logoutButton}
+          >
+            Logout
+          </AppButton>
+        </Box>
+
       </Toolbar>
     </AppBar>
-  );
+  )
 }
 
-export default Navbar;
+export default Navbar

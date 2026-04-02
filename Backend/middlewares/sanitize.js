@@ -10,10 +10,10 @@ const sanitizeValue = (value) => {
 const sanitizeBody = (req, res, next) => {
   if (req.body && typeof req.body === "object") {
     for (const key in req.body) {
-      req.body[key] = sanitizeValue(req.body[key]);         // clean every field
+      req.body[key] = sanitizeValue(req.body[key]);     
     }
   }
-  next();      // pass to next middleware
+  next();      
 };
 
 module.exports = sanitizeBody;
