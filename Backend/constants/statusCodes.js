@@ -8,4 +8,14 @@ const STATUS = {
   SERVER_ERROR: 500,
 };
 
-module.exports = STATUS;
+const STATUS_TEXT = {
+  200: "success",
+  201: "created",
+  400: "bad_request",
+  401: "unauthorized",
+  403: "forbidden",
+  404: "not_found",
+  500: "internal_server_error",
+};
+
+module.exports = { STATUS, STATUS_TEXT };

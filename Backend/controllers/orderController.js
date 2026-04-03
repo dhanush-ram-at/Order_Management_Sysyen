@@ -1,5 +1,5 @@
 const orderService = require("../services/orderService");
-const STATUS       = require("../constants/statusCodes");
+const { STATUS, STATUS_TEXT } = require("../constants/statusCodes");
 const { toCreateOrderInput, toUpdateOrderInput } = require("../DTOs/orderDTO");
 const ORDER = require("../constants/error_messages/order");
 
@@ -9,7 +9,12 @@ const createOrder = async (req, res, next) => {
     // pass req.user.id so the order is linked to the logged-in user
     const input = toCreateOrderInput(req.body, req.user.id);
     const order = await orderService.createOrder(input, req.files);
-    return res.status(STATUS.CREATED).json({ message: ORDER.CREATED, order });
+    return res.status(STATUS.CREATED).json({
+      code:    STATUS.CREATED,
+      status:  STATUS_TEXT[STATUS.CREATED],
+      message: ORDER.CREATED,
+      order,
+    });
   } catch (error) {
     next(error);
   }
@@ -21,6 +26,8 @@ const getOrders = async (req, res, next) => {
     // pass req.user so service can filter by user_id for USER role
     const result = await orderService.getOrders(req.query, req.user);
     return res.status(STATUS.OK).json({
+      code:    STATUS.OK,
+      status:  STATUS_TEXT[STATUS.OK],
       message: ORDER.FETCH_OK,
       page:    result.page,
       limit:   result.limit,
@@ -38,9 +45,18 @@ const getOrderById = async (req, res, next) => {
     const id    = parseInt(req.params.id);
     const order = await orderService.getOrderById(id);
     if (!order) {
-      return res.status(STATUS.NOT_FOUND).json({ message: ORDER.NOT_FOUND });
+      return res.status(STATUS.NOT_FOUND).json({ 
+        code:    STATUS.NOT_FOUND,
+        status:  STATUS_TEXT[STATUS.NOT_FOUND],
+        message: ORDER.NOT_FOUND 
+      });
     }
-    return res.status(STATUS.OK).json({ message: ORDER.FETCH_OK, order });
+    return res.status(STATUS.OK).json({ 
+      code:    STATUS.OK,
+      status:  STATUS_TEXT[STATUS.OK],
+      message: ORDER.FETCH_OK, 
+      data: order 
+    });
   } catch (error) {
     next(error);
   }
@@ -52,7 +68,12 @@ const updateOrder = async (req, res, next) => {
     const id    = parseInt(req.params.id);
     const input = toUpdateOrderInput(req.body);
     const order = await orderService.updateOrder(id, input);
-    return res.status(STATUS.OK).json({ message: ORDER.UPDATED, order });
+    return res.status(STATUS.OK).json({ 
+      code:    STATUS.OK,
+      status:  STATUS_TEXT[STATUS.OK],
+      message: ORDER.UPDATED, 
+      data: order 
+    });
   } catch (error) {
     next(error);
   }
@@ -63,7 +84,10 @@ const deleteOrder = async (req, res, next) => {
   try {
     const id = parseInt(req.params.id);
     await orderService.deleteOrder(id);
-    return res.status(STATUS.OK).json({ message: ORDER.DELETED });
+    return res.status(STATUS.OK).json({ 
+      code:    STATUS.OK,
+      status:  STATUS_TEXT[STATUS.OK],
+      message: ORDER.DELETED });
   } catch (error) {
     next(error);
   }

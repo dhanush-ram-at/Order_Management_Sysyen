@@ -3,7 +3,7 @@ import Swal from "sweetalert2"
 import { PAGE_ROUTES } from "../Routes/apiRoutes"
 import AppButton from "../components/common/AppButton"
 import { COLORS } from "../constants/styles/theme"
-import { navbarStyles } from "../constants/styles/Navbarstyles"
+import { navbarStyles } from "../constants/styles/navbarStyles"
 
 function Navbar() {
   const user = JSON.parse(localStorage.getItem("user") || "{}")

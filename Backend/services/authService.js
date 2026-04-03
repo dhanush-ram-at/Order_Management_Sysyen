@@ -9,13 +9,16 @@ const register = async (data) => {
   try {
     const existing = await authRepo.getUserByEmail(data.email);
     if (existing) {
-      throw new Error(AUTH.EMAIL_ALREADY_EXISTS);
+    //   throw new Error(`${AUTH.EMAIL_ALREADY_EXISTS}:${error.message}`);
+      const error = new Error(AUTH.EMAIL_ALREADY_EXISTS);
+      error.statusCode = 400;
+      throw error;
     }
 
     // Hash password using rounds from APP_CONFIG
     const hashed = await bcrypt.hash(data.password, APP_CONFIG.BCRYPT_ROUNDS);
     const user = await authRepo.createUser({
-      name:  ata.name,
+      name:  data.name,
       email: data.email,
       password: hashed,
       role:  data.role || "USER",
@@ -24,7 +27,8 @@ const register = async (data) => {
 
   }
   catch (error) {
-    throw new Error(`${AUTH.REGISTERATION_FAILED}: ${error.message}`);
+    throw error;
+    //throw new Error(`${AUTH.REGISTERATION_FAILED}: ${error.message}`);
   }
 };
 

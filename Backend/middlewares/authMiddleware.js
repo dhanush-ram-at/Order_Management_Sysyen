@@ -1,4 +1,4 @@
-const STATUS = require("../constants/statusCodes");
+const { STATUS, STATUS_TEXT } = require("../constants/statusCodes");
 const AUTH = require("../constants/error_messages/auth")//const MESSAGES = require("../constants/error_messages/db");
 const { verifyToken } = require("../utils/token");
 
@@ -7,6 +7,8 @@ const protect = (req, res, next) => {
   const header = req.headers.authorization;
   if (!header) {
     return res.status(STATUS.UNAUTHORIZED).json({
+      code:    STATUS.UNAUTHORIZED,
+      status:  STATUS_TEXT[STATUS.UNAUTHORIZED],
       message: AUTH.NO_TOKEN,
     });
   }
@@ -20,6 +22,8 @@ const protect = (req, res, next) => {
     next();
   } catch {
     return res.status(STATUS.UNAUTHORIZED).json({
+      code:    STATUS.UNAUTHORIZED,
+      status:  STATUS_TEXT[STATUS.UNAUTHORIZED],
       message: AUTH.INVALID_TOKEN,
     });
   }
@@ -31,6 +35,8 @@ const authorize = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
       return res.status(STATUS.FORBIDDEN).json({
+        ode:    STATUS.FORBIDDEN,
+        status:  STATUS_TEXT[STATUS.FORBIDDEN],
         message: AUTH.FORBIDDEN,
       });
     }

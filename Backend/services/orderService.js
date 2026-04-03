@@ -5,20 +5,32 @@ const generateOrderCode   = require("../utils/generateOrderCode");
 const APP_CONFIG          = require("../constants/appConfig");
 const REPO                = require("../constants/error_messages/repo");
 const ORDER               = require("../constants/error_messages/order");
-
+const {STATUS} = require("../constants/statusCodes")
 // CREATE
 const createOrder = async (input, files) => {
   try {
     const total_amount = calcTotal(input.price, input.quantity);
+
+    // REMOVE user_id from input
+    const { user_id, ...rest } = input;
+
     const data = {
-      ...input,
-      order_code:   generateOrderCode(),
+      ...rest,
+      order_code: generateOrderCode(),
       total_amount: total_amount,
+
+      // relation
+      user: user_id
+        ? { connect: { id: user_id } }
+        : undefined
     };
+
     const order = await orderRepository.createOrder(data);
+
     if (files && files.length > 0) {
       await saveAttachments(order.order_id, files);
     }
+
     return order;
   } catch (error) {
     throw new Error(`${REPO.CREATE_ORDER_FAILED}: ${error.message}`);
@@ -83,9 +95,18 @@ const updateOrder = async (id, input) => {
 // DELETE
 const deleteOrder = async (id) => {
   try {
+    const existingOrder = await orderRepository.findOrderById(id);
+
+    if (!existingOrder) {
+      const error = new Error(REPO.DELETE_ORDER_FAILED);
+      error.statusCode = STATUS.NOT_FOUND; 
+      throw error;
+    }
+
     await orderRepository.softDeleteOrderById(id);
+
   } catch (error) {
-    throw new Error(`${REPO.DELETE_ORDER_FAILED}: ${error.message}`);
+    throw error;
   }
 };
 
